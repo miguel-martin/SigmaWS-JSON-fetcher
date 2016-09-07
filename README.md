@@ -1,0 +1,1 @@
+# SigmaWS-JSON-fetcher

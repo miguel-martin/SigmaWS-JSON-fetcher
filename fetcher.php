@@ -663,8 +663,40 @@ class SigmaJSONFetcher {
 }
 
 
-echo "Generando centros.json...";
+
+
+date_default_timezone_set('UTC');
+
+/*echo "Generando centros.json...\n";
 $ws_url = "http://demo.sigmaaie.org/wsods/resources/titulaciones/2016/centros";
+$ws_url_update = "http://demo.sigmaaie.org/wsods/resources/administracion/2016/cargarcentros";
+echo "WARNING: Recuerde que para actualizar el ODS deben haberse hecho las llamadas necesarias a ".$ws_url_update;
+
 $migrateID = 'CentrosMigration';
 $fetcher = new SigmaJSONFetcher($migrateID);
-$data = $fetcher->getSingleJSON($ws_url, 'centros');
+$data = $fetcher->getSingleJSON($ws_url, 'centros');*/
+
+
+
+echo "Generando asignaturas.json...\n";
+echo date('l jS \of F Y h:i:s A');
+$ws_url = "http://demo.sigmaaie.org/wsods/resources/titulaciones/2016/asignaturas";
+$ws_url_update = "http://demo.sigmaaie.org/wsods/resources/administracion/2016/cargarasignaturas";
+$migrateID = 'AsignaturasMigration';
+for ($i=1; $i<=151; $i++){ // hay 151 páginas (ahora!)
+    echo "\n Pagina ".$i;
+    $fetcher = new SigmaJSONFetcher($migrateID);
+    $data = $fetcher->getSingleJSON($ws_url.'/'.$i, 'asignaturas_'.$i);
+}
+echo "Proceso completado";
+echo date('l jS \of F Y h:i:s A');
+
+
+/*echo "Generando arbol.json...\n";
+$ws_url = "http://demo.sigmaaie.org/wsods/resources/titulaciones/2016/estudios";
+$ws_url_update = "http://demo.sigmaaie.org/wsods/resources/administracion/2016/cargararbol";
+$migrateID = 'EstudiosMigration';
+$fetcher = new SigmaJSONFetcher($migrateID);
+$data = $fetcher->getSingleJSON($ws_url, 'arbol');*/
+
+

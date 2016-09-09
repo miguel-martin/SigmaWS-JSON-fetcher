@@ -581,13 +581,20 @@ class SigmaJSONFetcher {
   }
 
   public function getPagedJSON($url, $dest_filename, $container) {
-    $data_folder = drupal_get_path('module', 'titulaciones_migration') . '/data';
+    // MIGUEL FIXME
+    //$data_folder = drupal_get_path('module', 'titulaciones_migration') . '/data';
+    $data_folder = "./data";
     $data_file_destination = $data_folder . '/' . $dest_filename . '-tmp.json';
 
     $pages = 0;
     $currentPage = 1;
-    file_put_contents('', $data);
+    // MIGUEL FIXME comento esto
+    //file_put_contents('', $data);
     do {
+      // MIGUEL FIXME
+      echo "\nPágina actual: ".$currentPage;
+      echo "\nVoy a pedir ".$url.'/'.$currentPage."\n";
+
       $sigmaWS = new SigmaHttpWS($url . '/' . $currentPage, $this->id);
       $response = $sigmaWS->make_request();
       $data = $sigmaWS->process_request($response);
@@ -596,6 +603,8 @@ class SigmaJSONFetcher {
       if ($response->code == 200) {
         if (!$pages) {
           $pages = $json_data->paginasTotales;
+          // MIGUEL
+          echo "\nDetectadas ".$pages." paginas";
         }
 
         $data = json_encode($json_data->$container);
@@ -613,7 +622,7 @@ class SigmaJSONFetcher {
                                   array('!url' => $url)));
       }
 
-    } while ($currentPage <= 2); // ToDo. $page
+    } while ($currentPage <= 151); // ToDo. $page // FIXME Miguel
 
     $data = "[";
     $data .= rtrim(file_get_contents($data_file_destination), ',');
@@ -678,19 +687,24 @@ $data = $fetcher->getSingleJSON($ws_url, 'centros');*/
 
 
 
-echo "Generando asignaturas.json...\n";
+echo "\nGenerando asignaturas.json...\n";
 echo date('l jS \of F Y h:i:s A');
 $ws_url = "http://demo.sigmaaie.org/wsods/resources/titulaciones/2016/asignaturas";
 $ws_url_update = "http://demo.sigmaaie.org/wsods/resources/administracion/2016/cargarasignaturas";
 $migrateID = 'AsignaturasMigration';
-for ($i=1; $i<=151; $i++){ // hay 151 páginas (ahora!)
+// FIXME
+/*for ($i=1; $i<=151; $i++){ // hay 151 páginas (ahora!)
     echo "\n Pagina ".$i;
     $fetcher = new SigmaJSONFetcher($migrateID);
     $data = $fetcher->getSingleJSON($ws_url.'/'.$i, 'asignaturas_'.$i);
-}
-echo "Proceso completado";
-echo date('l jS \of F Y h:i:s A');
+} */
 
+// MEJOR directamente llamamos al método paginado
+$fetcher = new SigmaJSONFetcher($migrateID);
+$data = $fetcher->getPagedJSON($ws_url, 'asignaturas', 'asignaturas');
+
+echo "\nProceso completado\n";
+echo date('l jS \of F Y h:i:s A');
 
 /*echo "Generando arbol.json...\n";
 $ws_url = "http://demo.sigmaaie.org/wsods/resources/titulaciones/2016/estudios";
